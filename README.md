@@ -1,6 +1,6 @@
 # webcat
 
-A p2p pipe across the web using webrtc that uses your Github private/public for authentication and a [signalhub](https://github.com/mafintosh/signalhub) for discovery
+Mad science p2p pipe across the web using webrtc that uses your Github private/public for authentication and a [signalhub](https://github.com/mafintosh/signalhub) for discovery
 
 ```
 npm install -g webcat
@@ -82,7 +82,6 @@ On another machine connected to the internet that has your Github key
 ```
 echo machine two | webcat mafintosh
 ```
-
 
 ## License
 
