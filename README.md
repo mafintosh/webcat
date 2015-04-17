@@ -83,6 +83,17 @@ On another machine connected to the internet that has your Github key
 echo machine two | webcat mafintosh
 ```
 
+## Programmatic usage
+
+You can use webcat from node as well.
+
+``` js
+var webcat = require('webcat')
+
+var stream = webcat('mafintosh') // put in the name of the person you want to talk to
+process.stdin.pipe(stream).pipe(process.stdout)
+```
+
 ## License
 
 MIT
