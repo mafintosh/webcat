@@ -1,0 +1,29 @@
+{
+  "name": "webcat",
+  "version": "0.0.0",
+  "description": "A p2p pipe across the web using webrtc that uses your Github private/public for authentication and a signalhub for discovery",
+  "main": "index.js",
+  "dependencies": {
+    "duplexify": "^3.3.0",
+    "ghsign": "^1.0.2",
+    "minimist": "^1.1.1",
+    "prompt-sync": "^1.0.0",
+    "pump": "^1.0.0",
+    "simple-peer": "^4.2.2",
+    "wrtc": "0.0.55"
+  },
+  "devDependencies": {},
+  "bin": {
+    "webcat": "./bin.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mafintosh/webcat.git"
+  },
+  "author": "Mathias Buus (@mafintosh)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mafintosh/webcat/issues"
+  },
+  "homepage": "https://github.com/mafintosh/webcat"
+}
