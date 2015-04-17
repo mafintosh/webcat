@@ -9,6 +9,7 @@
     "minimist": "^1.1.1",
     "prompt-sync": "^1.0.0",
     "pump": "^1.0.0",
+    "signalhub": "^1.1.0",
     "simple-peer": "^4.2.2",
     "wrtc": "0.0.55"
   },
