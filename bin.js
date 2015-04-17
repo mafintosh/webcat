@@ -4,7 +4,7 @@ var minimist = require('minimist')
 var pump = require('pump')
 var fs = require('fs')
 var path = require('path')
-var prompt = require('prompt-sync')
+var promptSync = require('prompt-sync')
 var webcat = require('./')
 
 var argv = minimist(process.argv.slice(2), {
@@ -25,7 +25,7 @@ try {
 
 if (argv.configure || (!conf.username && !argv.username)) {
   process.stderr.write('Enter your github username' + (conf.username ? '(' + conf.username + ')' : '') + ': ')
-  conf.username = prompt().trim() || conf.username
+  conf.username = promptSync().trim() || conf.username
   if (!conf.username) process.exit(1)
 
   try {
@@ -37,7 +37,7 @@ if (argv.configure || (!conf.username && !argv.username)) {
   fs.writeFileSync(path.join(process.env.HOME || process.env.USERPROFILE, '.config/webcat.json'), JSON.stringify(conf, null, 2) + '\n')
 }
 
-if (argv.configure) return
+if (argv.configure) process.exit()
 if (!argv.username) argv.username = conf.username
 
 if (!argv._[0]) {

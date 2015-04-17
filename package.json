@@ -12,9 +12,14 @@
     "simple-peer": "^4.2.2",
     "wrtc": "0.0.55"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "standard": "^3.6.1"
+  },
   "bin": {
     "webcat": "./bin.js"
+  },
+  "scripts": {
+    "test": "standard"
   },
   "repository": {
     "type": "git",

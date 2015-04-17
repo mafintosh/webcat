@@ -1,8 +1,6 @@
 var ghsign = require('ghsign')
 var signalhub = require('signalhub')
-var wrtc = require('wrtc')
 var SimplePeer = require('simple-peer')
-var crypto = require('crypto')
 var fs = require('fs')
 var path = require('path')
 var duplexify = require('duplexify')
@@ -28,9 +26,8 @@ module.exports = function (username, opts) {
   var hub = signalhub(opts.signalhub || 'http://dev.mathiasbuus.eu:8080')
 
   var subs = hub.subscribe(opts.username)
-  var closed = false
 
-  subs.on('data', function ondata(data) {
+  subs.on('data', function ondata (data) {
     if (data.from !== username) return
     if (!data.signal && !data.signal.type || !data.signal.sdp || !data.signature) return
     if (opts.initiator && data.signal.type === 'offer') return
