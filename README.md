@@ -2,6 +2,8 @@
 
 Mad science p2p pipe across the web using webrtc that uses your Github private/public key for authentication and a [signalhub](https://github.com/mafintosh/signalhub) for discovery
 
+We also want to support other key hosts beyond Github. If you have suggestions or want to help implement this check out [this issue](https://github.com/mafintosh/webcat/issues/5).
+
 ```
 npm install -g webcat
 ```
