@@ -52,7 +52,7 @@ module.exports = function (username, opts) {
 
   var peer = null
   var subs = hub.subscribe(opts.username)
-  var syn = {type: 'syn', nouce: Math.random()}
+  var syn = {type: 'syn', nounce: Math.random()}
   var isInitiator = false
   var connected = false
 
@@ -106,8 +106,9 @@ module.exports = function (username, opts) {
       if (message.type === 'syn' && peer) return cb()
 
       if (message.type === 'syn') {
-        if (message.nouce === syn.nouce) return cb()
-        if (message.nouce < syn.nouce) return sendSyn(cb)
+        if (message.nouce) message.nounce = message.nouce
+        if (message.nounce === syn.nounce) return cb()
+        if (message.nounce < syn.nounce) return sendSyn(cb)
         createPeer(true)
         return cb()
       }
