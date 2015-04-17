@@ -5,6 +5,10 @@ var SimplePeer = require('simple-peer')
 var fs = require('fs')
 var path = require('path')
 var duplexify = require('duplexify')
+var through = require('through2')
+var pump = require('pump')
+
+var noop = function () {}
 
 var conf = {}
 try {
@@ -21,63 +25,104 @@ module.exports = function (username, opts) {
 
   debug('new instance', username, opts)
 
-  var sign = ghsign.signer(opts.username)
-  var verify = ghsign.verifier(username)
   var stream = duplexify()
 
-  var peer = new SimplePeer({initiator: opts.initiator, trickle: false})
   var hub = signalhub(opts.signalhub || 'http://dev.mathiasbuus.eu:8080')
+  var sign = ghsign.signer(opts.username)
+  var verify = ghsign.verifier(username)
 
-  var subs = hub.subscribe(opts.username)
-
-  subs.on('data', function ondata (data) {
-    debug('subscription', data)
-
-    if (data.from !== username) return
-    if (!data.signal && !data.signal.type || !data.signal.sdp || !data.signature) return
-    if (opts.initiator && data.signal.type === 'offer') return
-    if (!opts.initiator && data.signal.type !== 'offer') return
-
-    subs.removeListener('data', ondata)
-    subs.destroy()
-
-    stream.emit('receive-signal', data)
-
-    debug('verifying message')
-    verify(data.signal.type + '\n' + data.signal.sdp, data.signature, 'base64', function (err, verified) {
-      debug('verified message?', err, verified)
-      if (err) return stream.destroy(err)
-      if (!verified) return
-      peer.signal(data.signal)
+  var signMessage = function (message, cb) {
+    debug('signing message', message)
+    message = JSON.stringify(message)
+    sign(message, 'base64', function (err, sig) {
+      if (err) return cb(err)
+      cb(null, [sig, message])
     })
-  })
+  }
 
-  peer.on('connect', function () {
-    debug('connected')
-    stream.emit('connect')
-    stream.setReadable(peer)
-    stream.setWritable(peer)
-  })
+  var verifyMessage = function (data, cb) {
+    if (!Array.isArray(data) || data.length !== 2) return cb()
+    debug('verifying message', data)
+    verify(data[1], data[0], 'base64', function (err, verified) {
+      debug('message verified?', err, verified)
+      if (err) return cb(err)
+      if (verified) return cb(null, JSON.parse(data[1]))
+      cb()
+    })
+  }
 
-  peer.on('close', function () {
-    stream.destroy()
-  })
+  var peer = null
+  var subs = hub.subscribe(opts.username)
+  var syn = {type: 'syn', nouce: Math.random()}
+  var isInitiator = false
 
-  peer.on('signal', function (signal) {
-    debug('local signal', signal)
-    stream.emit('signal', signal)
-    sign(signal.type + '\n' + signal.sdp, 'base64', function (err, sig) {
-      if (err) return stream.destroy(err)
-      debug('signed data, broadcasting')
-      hub.broadcast(username, {
-        signature: sig,
-        from: opts.username,
-        signal: signal
-      }, function (err) {
+  var sendSyn = function (cb) {
+    if (!cb) cb = noop
+    signMessage(syn, function (err, message) {
+      if (err) return cb(err)
+      hub.broadcast(username, message, cb)
+    })
+  }
+
+  var createPeer = function (initiator) {
+    if (peer) return
+
+    isInitiator = initiator
+    peer = new SimplePeer({initiator: initiator, trickle: false})
+
+    peer.on('connect', function () {
+      subs.destroy()
+      debug('connected')
+      stream.emit('connect')
+      stream.setReadable(peer)
+      stream.setWritable(peer)
+    })
+
+    peer.on('close', function () {
+      stream.destroy()
+    })
+
+    peer.on('signal', function (signal) {
+      debug('local signal', signal)
+      stream.emit('signal', signal)
+
+      signMessage(signal, function (err, message) {
         if (err) return stream.destroy(err)
+        hub.broadcast(username, message, function (err) {
+          if (err) stream.destroy(err)
+        })
       })
     })
-  })
+  }
+
+  pump(subs, through.obj(function (data, enc, cb) {
+    verifyMessage(data, function (err, message) {
+      if (err) return cb(err)
+      if (!message) return cb()
+
+      if (message.type === 'syn') {
+        if (message.nouce === syn.nouce) return cb()
+        if (message.nouce < syn.nouce) return sendSyn(cb)
+        createPeer(true)
+        return cb()
+      }
+
+      if (isInitiator && message.type === 'offer') return cb()
+      if (!isInitiator && message.type === 'answer') return cb()
+
+      if (message.type === 'offer' || message.type === 'answer') {
+        debug('remote signal', message)
+        stream.emit('receive-signal', data)
+        createPeer(false)
+        peer.signal(message)
+        return cb()
+      }
+
+      cb() // accept everything else
+    })
+  }))
+
+  sendSyn()
 
   return stream
 }
