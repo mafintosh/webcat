@@ -9,7 +9,7 @@ npm install -g webcat
 ## Usage
 
 webcat lets you establish a p2p pipe to other github users over the web.
-Let's say I wanted to connect to @maxogden
+Let's say I wanted to connect to [@maxogden](https://github.com/maxogden)
 
 First I need to configure webcat once
 
@@ -33,7 +33,7 @@ hi mathias
 ```
 
 webcat will create a p2p pipe between connect me and max by using a [signalhub](https://github.com/mafintosh/signalhub) to exchange webrtc metadata
-and Github private/public keys to authenticate that Max is actually @maxogden and that I am actually @mafintosh
+and Github private/public keys to authenticate that Max is actually [@maxogden](https://github.com/maxogden) and that I am actually [@mafintosh](https://github.com/mafintosh)
 
 On my machine my prompt now looks like
 
