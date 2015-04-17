@@ -130,7 +130,9 @@ module.exports = function (username, opts) {
     if (!connected) stream.destroy(err)
   })
 
-  sendSyn()
+  sendSyn(function (err) {
+    if (err) return stream.destroy(err)
+  })
 
   return stream
 }

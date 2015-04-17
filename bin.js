@@ -51,4 +51,6 @@ if (!argv._[0]) {
 }
 
 // webrtc keeps the eventloop running for some reason so we process.exit on close for now ...
-pump(process.stdin, webcat(argv._[0], argv).on('close', process.exit), process.stdout)
+pump(process.stdin, webcat(argv._[0], argv).on('close', process.exit), process.stdout, function (err) {
+  if (err) throw err
+})
