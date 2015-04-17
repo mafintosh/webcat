@@ -6,7 +6,7 @@
   "dependencies": {
     "debug": "^2.1.3",
     "duplexify": "^3.3.0",
-    "ghsign": "^1.0.2",
+    "ghsign": "^1.0.4",
     "minimist": "^1.1.1",
     "prompt-sync": "^1.0.0",
     "pump": "^1.0.0",
