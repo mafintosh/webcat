@@ -4,6 +4,7 @@
   "description": "A p2p pipe across the web using webrtc that uses your Github private/public for authentication and a signalhub for discovery",
   "main": "index.js",
   "dependencies": {
+    "debug": "^2.1.3",
     "duplexify": "^3.3.0",
     "ghsign": "^1.0.2",
     "minimist": "^1.1.1",

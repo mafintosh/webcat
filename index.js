@@ -1,3 +1,4 @@
+var debug = require('debug')('webcat')
 var ghsign = require('ghsign')
 var signalhub = require('signalhub')
 var SimplePeer = require('simple-peer')
@@ -18,6 +19,8 @@ module.exports = function (username, opts) {
   if (!opts.username) throw new Error('You must specify options.username or run webcat --configure')
   if (opts.initiator === undefined) opts.initiator = username < opts.username
 
+  debug('new instance', username, opts)
+
   var sign = ghsign.signer(opts.username)
   var verify = ghsign.verifier(username)
   var stream = duplexify()
@@ -28,6 +31,8 @@ module.exports = function (username, opts) {
   var subs = hub.subscribe(opts.username)
 
   subs.on('data', function ondata (data) {
+    debug('subscription', data)
+
     if (data.from !== username) return
     if (!data.signal && !data.signal.type || !data.signal.sdp || !data.signature) return
     if (opts.initiator && data.signal.type === 'offer') return
@@ -37,7 +42,10 @@ module.exports = function (username, opts) {
     subs.destroy()
 
     stream.emit('receive-signal', data)
+
+    debug('verifying message')
     verify(data.signal.type + '\n' + data.signal.sdp, data.signature, 'base64', function (err, verified) {
+      debug('verified message?', err, verified)
       if (err) return stream.destroy(err)
       if (!verified) return
       peer.signal(data.signal)
@@ -45,6 +53,7 @@ module.exports = function (username, opts) {
   })
 
   peer.on('connect', function () {
+    debug('connected')
     stream.emit('connect')
     stream.setReadable(peer)
     stream.setWritable(peer)
@@ -55,9 +64,11 @@ module.exports = function (username, opts) {
   })
 
   peer.on('signal', function (signal) {
+    debug('local signal', signal)
     stream.emit('signal', signal)
     sign(signal.type + '\n' + signal.sdp, 'base64', function (err, sig) {
       if (err) return stream.destroy(err)
+      debug('signed data, broadcasting')
       hub.broadcast(username, {
         signature: sig,
         from: opts.username,
