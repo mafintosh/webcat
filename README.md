@@ -67,6 +67,22 @@ On Max's machine
 webcat mafintosh > some-file
 ```
 
+## Pipe to yourself
+
+Assuming you have your github key on two different machines you can also open and pipe between them by using the same username.
+
+On one machine connected to the internet that has your Github key
+
+```
+echo machine one | webcat mafintosh
+```
+
+On another machine connected to the internet that has your Github key
+
+```
+echo machine two | webcat mafintosh
+```
+
 
 ## License
 

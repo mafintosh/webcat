@@ -99,6 +99,8 @@ module.exports = function (username, opts) {
       if (err) return cb(err)
       if (!message) return cb()
 
+      if (message.type === 'syn' && peer) return cb()
+
       if (message.type === 'syn') {
         if (message.nouce === syn.nouce) return cb()
         if (message.nouce < syn.nouce) return sendSyn(cb)
