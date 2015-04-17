@@ -54,11 +54,13 @@ module.exports = function (username, opts) {
   var subs = hub.subscribe(opts.username)
   var syn = {type: 'syn', nouce: Math.random()}
   var isInitiator = false
+  var connected = false
 
   var sendSyn = function (cb) {
     if (!cb) cb = noop
     signMessage(syn, function (err, message) {
       if (err) return cb(err)
+      debug('sendSyn', message)
       hub.broadcast(username, message, cb)
     })
   }
@@ -70,6 +72,7 @@ module.exports = function (username, opts) {
     peer = new SimplePeer({initiator: initiator, trickle: false})
 
     peer.on('connect', function () {
+      connected = true
       subs.destroy()
       debug('connected')
       stream.emit('connect')
@@ -95,6 +98,7 @@ module.exports = function (username, opts) {
   }
 
   pump(subs, through.obj(function (data, enc, cb) {
+    debug('received message', data)
     verifyMessage(data, function (err, message) {
       if (err) return cb(err)
       if (!message) return cb()
@@ -121,7 +125,10 @@ module.exports = function (username, opts) {
 
       cb() // accept everything else
     })
-  }))
+  }), function (err) {
+    debug('after pipe', err)
+    if (!connected) stream.destroy(err)
+  })
 
   sendSyn()
 
