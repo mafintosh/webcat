@@ -11,9 +11,15 @@ var argv = minimist(process.argv.slice(2), {
   alias: {
     configure: 'c',
     username: 'u',
-    signalhub: 's'
+    signalhub: 's',
+    version: 'v'
   }
 })
+
+if (argv.version) {
+  console.log(require('./package.json').version)
+  return
+}
 
 var conf = {}
 try {
