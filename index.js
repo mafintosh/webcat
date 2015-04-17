@@ -21,7 +21,6 @@ module.exports = function (username, opts) {
   if (!opts) opts = {}
   if (!opts.username) opts.username = conf.username
   if (!opts.username) throw new Error('You must specify options.username or run webcat --configure')
-  if (opts.initiator === undefined) opts.initiator = username < opts.username
 
   debug('new instance', username, opts)
 

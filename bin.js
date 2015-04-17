@@ -9,7 +9,6 @@ var webcat = require('./')
 
 var argv = minimist(process.argv.slice(2), {
   alias: {
-    initiator: 'i',
     configure: 'c',
     username: 'u',
     signalhub: 's'
