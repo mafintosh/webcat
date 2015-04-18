@@ -55,6 +55,26 @@ hi mathias
 hello max
 ```
 
+## How it works
+
+webcat works the following way
+
+1. First you sign a message that says you want to connect to another user using your Github private key
+2. You post this message to a known [signalhub](https://github.com/mafintosh/signalhub) in the channel /{another-username}
+3. The other user does the same thing only they posts it to the channel /{my-username}
+4. One of you receives the connect message and verifies that it came from the right person by looking up the other users public key using https://github.com/{another-username}.keys (and this will work in the browser if Github adds CORS GET to this API!)
+5. You then create a webrtc signal handshake, sign it and post it to the other user's lobby
+6. The other user receives this and posts back a signed version of their signaling data
+7. You use this data to establish a secure webrtc connection between eachother that is encrypted using DTLS
+8. You are now connected :)
+
+**warning**. we invented the first 6 parts of this scheme. it has not been properly peer reviewed so use at your own risk :)
+
+we use the following crypto dependencies:
+
+* openssl from node core (rsa signing and https for fetching public keys)
+* dtls from webrtc
+
 ## Use cases
 
 You can use webcat to pipe files across the internet!
