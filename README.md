@@ -8,6 +8,8 @@ We also want to support other key hosts beyond Github. If you have suggestions o
 npm install -g webcat
 ```
 
+If you have trouble getting it to compile try following the [wrtc install instructions](https://github.com/js-platform/node-webrtc#prerequisites)
+
 ## Usage
 
 webcat lets you establish a p2p pipe to other github users over the web.
