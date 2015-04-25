@@ -11,7 +11,7 @@
     "prompt-sync": "^1.0.0",
     "pump": "^1.0.0",
     "signalhub": "^1.1.0",
-    "simple-peer": "^4.2.2",
+    "simple-peer": "^5.1.0",
     "through2": "^0.6.5",
     "wrtc": "0.0.55"
   },

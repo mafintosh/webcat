@@ -2,6 +2,7 @@ var debug = require('debug')('webcat')
 var ghsign = require('ghsign')
 var signalhub = require('signalhub')
 var SimplePeer = require('simple-peer')
+var wrtc = require('wrtc')
 var fs = require('fs')
 var path = require('path')
 var duplexify = require('duplexify')
@@ -69,7 +70,7 @@ module.exports = function (username, opts) {
     if (peer) return
 
     isInitiator = initiator
-    peer = new SimplePeer({initiator: initiator, trickle: false})
+    peer = new SimplePeer({initiator: initiator, trickle: false, wrtc: wrtc})
 
     peer.on('connect', function () {
       connected = true
