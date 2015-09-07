@@ -22,19 +22,19 @@ module.exports = function (username, opts) {
   if (!opts) opts = {}
   if (!opts.username) opts.username = conf.username
   if (!opts.username) throw new Error('You must specify options.username or run webcat --configure')
+  if (!opts.sign) opts.sign = ghsign.signer(opts.username)
+  if (!opts.verify) opts.verify = ghsign.verifier(username)
 
   debug('new instance', username, opts)
 
   var stream = duplexify()
 
   var hub = signalhub(opts.signalhub || 'http://dev.mathiasbuus.eu:8080')
-  var sign = ghsign.signer(opts.username)
-  var verify = ghsign.verifier(username)
 
   var signMessage = function (message, cb) {
     debug('signing message', message)
     message = JSON.stringify(message)
-    sign(message, 'base64', function (err, sig) {
+    opts.sign(message, 'base64', function (err, sig) {
       if (err) return cb(err)
       cb(null, [sig, message])
     })
@@ -43,7 +43,7 @@ module.exports = function (username, opts) {
   var verifyMessage = function (data, cb) {
     if (!Array.isArray(data) || data.length !== 2) return cb()
     debug('verifying message', data)
-    verify(data[1], data[0], 'base64', function (err, verified) {
+    opts.verify(data[1], data[0], 'base64', function (err, verified) {
       debug('message verified?', err, verified)
       if (err) return cb(err)
       if (verified) return cb(null, JSON.parse(data[1]))
