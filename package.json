@@ -13,7 +13,7 @@
     "signalhub": "^1.1.0",
     "simple-peer": "^5.1.0",
     "through2": "^0.6.5",
-    "wrtc": "0.0.55"
+    "wrtc": "0.0.60"
   },
   "devDependencies": {
     "standard": "^3.6.1"
